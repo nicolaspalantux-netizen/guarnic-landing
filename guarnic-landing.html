@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GUARNIC – Gestión inteligente de operaciones en terreno</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #3f8dd8;
+      --primary-light: rgba(63,141,216,0.1);
+      --title: #171717;
+      --text: #4d4d4d;
+      --muted: rgba(0,0,0,0.45);
+      --stroke: #e8e8e8;
+      --card-bg: #fbfbfb;
+      --white: #ffffff;
+      --red: #ff4d4f;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--title); background: var(--white); overflow-x: hidden; }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--stroke);
+      padding: 20px 64px;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 8px; }
+    .nav-logo img { width: 31px; height: 35px; object-fit: contain; }
+    .nav-logo-text { font-size: 23px; font-weight: 900; letter-spacing: -0.46px; color: var(--title); font-family: 'Inter', sans-serif; }
+    .nav-links { display: flex; align-items: center; gap: 22px; flex: 1; padding-left: 40px; }
+    .nav-link { font-size: 14px; font-weight: 500; color: var(--text); letter-spacing: -0.07px; cursor: pointer; display: flex; align-items: center; gap: 2px; transition: color 0.2s; }
+    .nav-link:hover { color: var(--primary); }
+    .nav-link svg { width: 20px; height: 20px; opacity: 0.5; }
+    .nav-buttons { display: flex; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 12px; font-size: 14px; font-weight: 500; letter-spacing: -0.07px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .btn-outline { border: 1px solid var(--stroke); color: var(--text); background: var(--white); }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-primary { background: var(--primary); color: var(--white); border: 1px solid var(--primary); }
+    .btn-primary:hover { background: #3380c4; border-color: #3380c4; }
+    .btn-full { width: 100%; }
+
+    /* hamburger */
+    .nav-mobile { display: none; align-items: center; justify-content: space-between; }
+    .nav-mobile-logo { display: flex; align-items: center; gap: 8px; }
+    .hamburger { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--title); transition: all 0.3s; position: relative; }
+    .hamburger span::before, .hamburger span::after { content:''; position: absolute; width: 22px; height: 2px; background: var(--title); left: 0; transition: all 0.3s; }
+    .hamburger span::before { top: -6px; }
+    .hamburger span::after { top: 6px; }
+
+    /* ─── HERO ─── */
+    .hero { padding: 0 64px 50px; display: flex; justify-content: center; }
+    .hero-inner { display: flex; align-items: center; gap: 64px; max-width: 1080px; width: 100%; }
+    .hero-content { flex: 1; display: flex; flex-direction: column; gap: 32px; padding: 40px 0; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--card-bg); border: 1px solid var(--stroke);
+      padding: 10px 16px 10px 10px; border-radius: 100px; width: fit-content;
+    }
+    .hero-badge img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+    .hero-badge span { font-size: 14px; font-weight: 500; color: var(--title); letter-spacing: -0.07px; }
+    .hero-title { font-size: 44px; font-weight: 700; line-height: 48px; letter-spacing: -0.88px; color: var(--title); }
+    .hero-desc { font-size: 16px; font-weight: 500; line-height: 22px; color: var(--text); }
+    .hero-buttons { display: flex; flex-wrap: wrap; gap: 16px; }
+    .hero-image-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 42px 0; }
+    .hero-image-wrap img { width: 100%; height: 505px; object-fit: cover; }
+
+    /* ─── SECTION SHARED ─── */
+    .section { padding: 50px 64px; display: flex; justify-content: center; }
+    .container { max-width: 1080px; width: 100%; }
+    .section-header { text-align: center; margin-bottom: 40px; }
+    .section-title { font-size: 30px; font-weight: 700; line-height: 36px; letter-spacing: -0.6px; color: var(--title); }
+    .section-subtitle { font-size: 16px; font-weight: 500; line-height: 22px; color: var(--muted); margin-top: 12px; }
+
+    /* ─── WHAT IS GUARNIC ─── */
+    .what-section { background: var(--white); padding: 10px 64px; display: flex; justify-content: center; overflow: hidden; }
+    .what-inner { display: flex; gap: 24px; align-items: center; max-width: 1080px; width: 100%; }
+    .what-image { width: 297px; height: 327px; flex-shrink: 0; position: relative; overflow: hidden; border-radius: 16px; }
+    .what-image img { width: 100%; height: 100%; object-fit: cover; }
+    .what-image::after { content:''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, white 100%); }
+    .what-content { display: flex; flex-direction: column; gap: 24px; }
+    .what-title { font-size: 30px; font-weight: 700; line-height: 36px; letter-spacing: -0.6px; color: var(--title); }
+    .what-desc { font-size: 16px; font-weight: 500; line-height: 22px; color: #8c8c8c; letter-spacing: -0.08px; }
+    .dt-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--primary-light); border: 1px solid var(--primary);
+      padding: 10px 16px 10px 10px; border-radius: 100px; width: fit-content;
+    }
+    .dt-badge img { width: 25px; height: 25px; object-fit: contain; }
+    .dt-badge span { font-size: 14px; font-weight: 500; color: var(--primary); letter-spacing: -0.07px; }
+    .dt-badge .verified { width: 24px; height: 24px; }
+    .what-note { font-size: 14px; font-weight: 500; line-height: 20px; color: #8c8c8c; max-width: 426px; }
+
+    /* ─── CHALLENGES ─── */
+    .challenges-section { background: var(--white); padding: 100px 64px 50px; display: flex; justify-content: center; overflow: hidden; }
+    .cards-row { display: flex; gap: 16px; }
+    .card {
+      background: var(--card-bg); border: 1px solid var(--stroke);
+      border-radius: 16px; padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+      flex: 1;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 24px rgba(63,141,216,0.1); transform: translateY(-2px); }
+    .card-icon { width: 32px; height: 32px; background: var(--primary-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .card-icon img { width: 24px; height: 24px; }
+    .card-title { font-size: 16px; font-weight: 600; line-height: 1; color: var(--title); letter-spacing: -0.24px; }
+    .card-desc { font-size: 14px; font-weight: 500; line-height: 20px; color: var(--text); letter-spacing: -0.07px; }
+
+    /* ─── FEATURES ─── */
+    .features-section { padding: 50px 64px; display: flex; flex-direction: column; gap: 47px; align-items: center; }
+    .features-list { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 800px; }
+    .feature-card {
+      background: var(--card-bg); border: 1px solid var(--stroke);
+      border-radius: 22px; display: flex; align-items: center; gap: 24px; overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .feature-card:hover { box-shadow: 0 8px 32px rgba(63,141,216,0.12); }
+    .feature-text { flex: 1; padding: 40px; display: flex; flex-direction: column; gap: 8px; }
+    .feature-label { font-size: 12px; font-weight: 700; color: var(--primary); letter-spacing: -0.24px; line-height: 17px; }
+    .feature-title { font-size: 20px; font-weight: 600; line-height: 28px; letter-spacing: -0.4px; color: var(--title); }
+    .feature-desc { font-size: 16px; font-weight: 500; line-height: 22px; color: var(--muted); letter-spacing: -0.08px; }
+    .feature-link { font-size: 14px; font-weight: 500; color: var(--primary); letter-spacing: -0.07px; cursor: pointer; }
+    .feature-link:hover { text-decoration: underline; }
+    .feature-image { width: 388px; flex-shrink: 0; overflow: hidden; position: relative; }
+    .feature-image img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ─── WHY ─── */
+    .why-section { padding: 50px 64px; display: flex; flex-direction: column; gap: 42px; align-items: center; }
+    .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 1080px; }
+    .why-col { display: flex; flex-direction: column; gap: 20px; }
+
+    /* ─── INDUSTRIES ─── */
+    .industries-section { padding: 50px 64px; display: flex; flex-direction: column; gap: 42px; align-items: center; }
+    .industry-title { font-size: 30px; font-weight: 600; line-height: 36px; letter-spacing: -0.6px; color: var(--primary); text-align: center; }
+    .industry-subtitle { font-size: 16px; font-weight: 500; line-height: 22px; color: var(--text); text-align: center; margin-top: 8px; }
+    .industry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 1080px; }
+    .industry-card {
+      background: var(--card-bg); border: 1px solid var(--stroke);
+      border-radius: 16px; padding: 16px;
+      display: flex; flex-direction: column; gap: 20px;
+      height: 384px; transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .industry-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-3px); }
+    .industry-img { width: 100%; height: 200px; border-radius: 16px; object-fit: cover; flex-shrink: 0; }
+    .industry-content { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .industry-name { font-size: 16px; font-weight: 600; color: var(--title); letter-spacing: -0.24px; }
+    .industry-desc { font-size: 14px; font-weight: 500; line-height: 20px; color: var(--text); letter-spacing: -0.07px; }
+    .industry-link { font-size: 14px; font-weight: 500; color: var(--primary); cursor: pointer; }
+    .industry-link:hover { text-decoration: underline; }
+
+    /* ─── CLIENTS ─── */
+    .clients-section { padding: 50px 64px; display: flex; flex-direction: column; gap: 32px; align-items: center; text-align: center; overflow: hidden; }
+    .clients-title { font-size: 30px; font-weight: 600; line-height: 36px; letter-spacing: -0.6px; color: var(--title); }
+    .clients-subtitle { font-size: 16px; font-weight: 500; color: var(--text); margin-top: 8px; }
+    .logos-row { display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; padding: 16px 0; }
+    .logo-placeholder { background: var(--card-bg); border: 1px solid var(--stroke); border-radius: 12px; padding: 12px 28px; font-size: 14px; font-weight: 600; color: #999; letter-spacing: 0.5px; }
+
+    /* ─── FAQ ─── */
+    .faq-section { padding: 100px 64px; display: flex; justify-content: center; overflow: hidden; }
+    .faq-inner { display: flex; gap: 48px; max-width: 1080px; width: 100%; }
+    .faq-left { flex-shrink: 0; max-width: 340px; }
+    .faq-title { font-size: 30px; font-weight: 700; line-height: 36px; letter-spacing: -0.6px; color: var(--title); margin-bottom: 16px; }
+    .faq-intro { font-size: 16px; font-weight: 500; line-height: 22px; color: var(--text); }
+    .faq-intro a { color: var(--primary); }
+    .faq-list { flex: 1; display: flex; flex-direction: column; gap: 0; }
+    .faq-item { border-bottom: 1px solid var(--stroke); padding-bottom: 20px; margin-bottom: 10px; }
+    .faq-item:last-child { border: none; }
+    .faq-q { display: flex; align-items: flex-start; gap: 7px; cursor: pointer; padding: 10px 0 0; }
+    .faq-q img { width: 24px; height: 24px; flex-shrink: 0; margin-top: 2px; }
+    .faq-q span { font-size: 16px; font-weight: 500; line-height: 20px; color: var(--title); }
+    .faq-q.open span { color: var(--primary); }
+    .faq-answer { font-size: 14px; font-weight: 500; line-height: 20px; color: var(--text); margin-top: 19px; display: none; padding-left: 31px; }
+    .faq-answer.open { display: block; }
+    .faq-more { padding: 10px; font-size: 16px; font-weight: 500; color: var(--primary); cursor: pointer; }
+
+    /* ─── DEMO FORM ─── */
+    .demo-section { display: flex; justify-content: center; padding: 0 64px 80px; }
+    .demo-card {
+      background: var(--card-bg); border: 1px solid #f2f2f2;
+      border-radius: 20px; padding: 40px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 40px;
+      max-width: 828px; width: 100%;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.04);
+    }
+    .demo-info { flex: 1; }
+    .demo-title { font-size: 20px; font-weight: 600; color: var(--primary); letter-spacing: -0.3px; margin-bottom: 10px; }
+    .demo-desc { font-size: 14px; font-weight: 500; line-height: 1.4; color: #8a8a8a; max-width: 305px; font-family: 'Roboto', sans-serif; }
+    .demo-form { width: 289px; display: flex; flex-direction: column; gap: 10px; }
+    .form-field { display: flex; flex-direction: column; gap: 4px; }
+    .form-label { display: flex; align-items: center; gap: 4px; font-size: 14px; font-family: 'Roboto', sans-serif; }
+    .form-label .req { color: var(--red); }
+    .form-label .lbl { color: rgba(0,0,0,0.85); font-weight: 400; }
+    .form-input {
+      border: 1px solid #d9d9d9; border-radius: 2px;
+      padding: 8px 12px; font-size: 14px; font-family: 'Roboto', sans-serif;
+      color: var(--title); background: var(--white); width: 100%;
+      transition: border-color 0.2s;
+    }
+    .form-input::placeholder { color: rgba(0,0,0,0.25); font-size: 14px; }
+    .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(63,141,216,0.2); }
+    .form-submit {
+      background: var(--primary); color: var(--white); border-radius: 2px;
+      padding: 4px 15px; font-size: 14px; font-family: 'Roboto', sans-serif;
+      width: 100%; line-height: 22px; box-shadow: 0 2px 0 rgba(0,0,0,0.04);
+      transition: background 0.2s;
+    }
+    .form-submit:hover { background: #3380c4; }
+
+    /* ─── FOOTER ─── */
+    footer { border-top: 1px solid rgba(0,0,0,0.1); padding: 80px 64px; display: flex; justify-content: center; }
+    .footer-inner { max-width: 1080px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
+    .footer-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .footer-brand { display: flex; flex-direction: column; gap: 56px; }
+    .footer-brand-info { display: flex; flex-direction: column; gap: 8px; }
+    .footer-brand-name { font-size: 20px; font-weight: 600; letter-spacing: -0.4px; color: var(--title); font-family: 'Roboto', sans-serif; }
+    .footer-brand-desc { font-size: 14px; font-weight: 500; line-height: 20px; color: var(--text); letter-spacing: -0.07px; max-width: 280px; font-family: 'Roboto', sans-serif; }
+    .footer-socials { display: flex; gap: 24px; }
+    .footer-socials img { width: 24px; height: 24px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+    .footer-socials img:hover { opacity: 1; }
+    .footer-nav { display: flex; gap: 40px; }
+    .footer-col { display: flex; flex-direction: column; gap: 8px; width: 130px; }
+    .footer-col-title { font-size: 16px; font-weight: 600; color: var(--title); letter-spacing: -0.08px; line-height: 1.45; padding-bottom: 8px; font-family: 'Roboto', sans-serif; }
+    .footer-col a { font-size: 14px; font-weight: 500; line-height: 20px; color: var(--text); letter-spacing: -0.07px; font-family: 'Roboto', sans-serif; cursor: pointer; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--primary); }
+    .footer-copy { font-size: 14px; font-weight: 500; line-height: 20px; color: var(--text); letter-spacing: -0.07px; font-family: 'Roboto', sans-serif; }
+
+    /* ─── SCROLL ANIMATIONS ─── */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 768px) {
+      .nav { display: none; }
+      .nav-mobile { display: flex; padding: 20px 24px; position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 1px solid var(--stroke); }
+
+      .hero { padding: 24px; }
+      .hero-inner { flex-direction: column; gap: 24px; }
+      .hero-image-wrap { order: -1; padding: 0; }
+      .hero-image-wrap img { width: 147px; height: 227px; object-fit: cover; }
+      .hero-content { padding: 0; gap: 24px; }
+      .hero-badge span { font-size: 10px; }
+      .hero-badge img { width: 24px; height: 24px; }
+      .hero-title { font-size: 28px; line-height: 32px; letter-spacing: -0.56px; text-align: center; }
+      .hero-desc { font-size: 14px; text-align: center; color: rgba(0,0,0,0.55); }
+      .hero-buttons { flex-direction: column; gap: 10px; }
+      .hero-buttons .btn { width: 100%; }
+
+      .what-section { padding: 32px 24px; }
+      .what-inner { flex-direction: column; gap: 24px; align-items: center; text-align: center; }
+      .what-image { display: none; }
+      .what-title { font-size: 24px; line-height: 36px; letter-spacing: -0.48px; text-align: center; }
+      .what-desc { text-align: center; font-size: 14px; }
+      .what-note { font-size: 14px; text-align: center; max-width: 100%; }
+
+      .challenges-section { padding: 48px 24px; }
+      .cards-row { flex-direction: column; gap: 16px; }
+      .section-title { font-size: 24px; line-height: 32px; letter-spacing: -0.48px; }
+      .section-subtitle { font-size: 14px; }
+      .card-title { font-size: 20px; line-height: 28px; }
+
+      .features-section { padding: 50px 24px; gap: 20px; }
+      .features-list { max-width: 100%; }
+      .feature-card { flex-direction: column; }
+      .feature-image { width: 100%; height: auto; max-height: 203px; overflow: hidden; }
+      .feature-image img { width: 100%; height: auto; }
+      .feature-text { padding: 24px; }
+      .feature-title { font-size: 18px; line-height: 26px; letter-spacing: -0.36px; }
+      .feature-desc { font-size: 14px; }
+
+      .why-section { padding: 50px 24px; gap: 20px; }
+      .why-grid { grid-template-columns: 1fr; gap: 12px; }
+      .why-col { gap: 12px; }
+      .card-title { font-size: 18px; }
+
+      .industries-section { padding: 50px 24px; gap: 20px; }
+      .industry-grid { grid-template-columns: 1fr; gap: 12px; }
+      .industry-card { height: auto; }
+      .industry-img { height: 170px; }
+      .industry-title { font-size: 24px; line-height: 32px; letter-spacing: -0.48px; }
+
+      .clients-section { padding: 24px; }
+      .clients-title { font-size: 24px; letter-spacing: -0.48px; }
+
+      .faq-section { padding: 20px 16px; }
+      .faq-inner { flex-direction: column; gap: 20px; }
+      .faq-title { font-size: 20px; }
+      .faq-intro { font-size: 14px; }
+
+      .demo-section { padding: 0 16px 40px; }
+      .demo-card { flex-direction: column; align-items: center; padding: 40px; }
+      .demo-form { width: 100%; max-width: 289px; }
+
+      footer { padding: 64px 24px; }
+      .footer-top { flex-direction: column; gap: 32px; }
+      .footer-nav { flex-direction: column; gap: 40px; }
+      .footer-brand { gap: 32px; }
+
+      .section { padding: 50px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Desktop Nav -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <img src="https://www.figma.com/api/mcp/asset/25960411-df83-4090-88cd-094f1e6ce301" alt="GUARNIC Logo" />
+        <span class="nav-logo-text">GUARNIC</span>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="#">Inicio</a>
+        <a class="nav-link" href="#">Soluciones <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></a>
+        <a class="nav-link" href="#">Industrias <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></a>
+        <a class="nav-link" href="#">Control de asistencia</a>
+        <a class="nav-link" href="#">FAQs</a>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-outline">Acceso DT</button>
+        <button class="btn btn-primary">Iniciar sesión</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <nav class="nav-mobile">
+    <div class="nav-mobile-logo">
+      <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+      </div>
+      <img src="https://www.figma.com/api/mcp/asset/1d6321cb-9928-400d-b92f-a2767a8973c0" alt="GUARNIC" style="width:31px;height:35px;object-fit:contain;" />
+    </div>
+    <button class="btn btn-primary">Iniciar sesión</button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-content fade-in">
+        <div class="hero-badge">
+          <img src="https://www.figma.com/api/mcp/asset/1c045874-931a-4edb-98f3-fa38abf6fd0b" alt="DT Chile" />
+          <span>Sistema validado por la Dirección del Trabajo de Chile</span>
+        </div>
+        <h1 class="hero-title">Gestión inteligente de operaciones en terreno</h1>
+        <p class="hero-desc">Optimiza tus operaciones en tiempo real con tecnología avanzada, mejorando eficiencia, control y seguridad en terreno.</p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary">Solicitar una Demo</button>
+          <button class="btn btn-outline">Ingresar</button>
+          <button class="btn btn-outline">Acceso fiscalización DT</button>
+        </div>
+      </div>
+      <div class="hero-image-wrap fade-in fade-in-delay-1">
+        <img src="https://www.figma.com/api/mcp/asset/7a2bef84-e33c-4f9a-bcc1-44993ef45d16" alt="Operaciones en terreno" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ¿Qué es GUARNIC? -->
+  <section class="what-section">
+    <div class="what-inner container">
+      <div class="what-image">
+        <img src="https://www.figma.com/api/mcp/asset/6770b67d-fb16-4f46-a5b4-f14b83252dc9" alt="GUARNIC Dashboard" />
+      </div>
+      <div class="what-content fade-in">
+        <h2 class="what-title">¿Qué es GUARNIC?</h2>
+        <p class="what-desc">Guarnic optimiza las operaciones en terreno con una plataforma que permite supervisar equipos, controlar tareas y tomar decisiones en tiempo real.</p>
+        <div class="dt-badge">
+          <img src="https://www.figma.com/api/mcp/asset/1c045874-931a-4edb-98f3-fa38abf6fd0b" alt="DT" />
+          <span>Dirección del Trabajo de Chile</span>
+          <img class="verified" src="https://www.figma.com/api/mcp/asset/ee2fa19b-67e0-4dcd-a9da-a233f376fa7d" alt="Verificado" />
+        </div>
+        <p class="what-note">Además, está certificado y validado por la Dirección del Trabajo de Chile para el registro y control de asistencia laboral.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Desafíos -->
+  <section class="challenges-section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 class="section-title">Desafíos habituales en la gestión de operaciones</h2>
+        <p class="section-subtitle">Diversas organizaciones enfrentan obstáculos que limitan la eficiencia operativa, reducen la visibilidad de inconvenientes y dificultan la toma de decisiones oportunas.</p>
+      </div>
+      <div class="cards-row">
+        <div class="card fade-in fade-in-delay-1">
+          <div class="card-icon"><img src="https://www.figma.com/api/mcp/asset/87e518d4-b487-4e47-a17c-dab8010c5eb0" alt="" /></div>
+          <div>
+            <p class="card-title">Visibilidad limitada</p>
+            <p class="card-desc" style="margin-top:8px">Falta de visibilidad en tiempo real sobre la ubicación de los equipos y el estado de las tareas en terreno.</p>
+          </div>
+        </div>
+        <div class="card fade-in fade-in-delay-2">
+          <div class="card-icon"><img src="https://www.figma.com/api/mcp/asset/e3727bd4-5ceb-4b3f-b150-c58dbdbc059a" alt="" /></div>
+          <div>
+            <p class="card-title">Gestión ineficiente de rutas y tareas</p>
+            <p class="card-desc" style="margin-top:8px">Dificultad para planificar, asignar y optimizar rutas y actividades, generando retrasos y un uso poco eficiente de los recursos.</p>
+          </div>
+        </div>
+        <div class="card fade-in fade-in-delay-3">
+          <div class="card-icon"><img src="https://www.figma.com/api/mcp/asset/1f8b810a-e7c1-4729-b085-8e4e23786c18" alt="" /></div>
+          <div>
+            <p class="card-title">Información poco confiable</p>
+            <p class="card-desc" style="margin-top:8px">Registros manuales o dispersos que dificultan consolidar datos operativos, afectando la trazabilidad y el control de la operación.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cómo resolvemos -->
+  <section class="features-section">
+    <div class="section-header fade-in" style="max-width:800px;width:100%">
+      <h2 class="section-title">Cómo resolvemos estos desafíos</h2>
+      <p class="section-subtitle">Guarnic optimiza la gestión de operaciones, permitiendo planificar, ejecutar y supervisar equipos operativos con información confiable en tiempo real.</p>
+    </div>
+    <div class="features-list">
+      <!-- Feature 1 -->
+      <div class="feature-card fade-in">
+        <div class="feature-text">
+          <p class="feature-label">ASISTENCIA</p>
+          <p class="feature-title">Controla la asistencia del personal con precisión</p>
+          <p class="feature-desc">Registra ingresos y salidas, valida cumplimiento de turnos y asegura trazabilidad operativa en cada jornada.</p>
+          <a class="feature-link" href="#">Conocer más</a>
+        </div>
+        <div class="feature-image" style="height:369px">
+          <img src="https://www.figma.com/api/mcp/asset/3f28e8e2-4523-4770-a300-33155a3f52d3" alt="Asistencia" style="height:100%;object-fit:cover;object-position:top" />
+        </div>
+      </div>
+      <!-- Feature 2 -->
+      <div class="feature-card fade-in">
+        <div class="feature-text">
+          <p class="feature-label">RUTAS Y RECORRIDOS</p>
+          <p class="feature-title">Planifica y controla rutas operativas</p>
+          <p class="feature-desc">Organiza actividades con cronogramas digitales, alertas automáticas y trazabilidad completa para optimizar la gestión operativa.</p>
+          <a class="feature-link" href="#">Conocer más</a>
+        </div>
+        <div class="feature-image" style="height:259px">
+          <img src="https://www.figma.com/api/mcp/asset/bcff94f7-c5dc-4553-8639-df5b1d63b3b9" alt="Rutas" style="height:100%;object-fit:cover" />
+        </div>
+      </div>
+      <!-- Feature 3 -->
+      <div class="feature-card fade-in">
+        <div class="feature-text">
+          <p class="feature-label">TURNOS Y TAREAS</p>
+          <p class="feature-title">Planifica turnos y asigna cronogramas con total coordinación</p>
+          <p class="feature-desc">Organiza turnos operativos y actividades diarias con cronogramas claros, alertas automáticas y seguimiento continuo.</p>
+          <a class="feature-link" href="#">Conocer más</a>
+        </div>
+        <div class="feature-image" style="height:288px">
+          <img src="https://www.figma.com/api/mcp/asset/53d6c9a5-1014-4b65-97ab-2c2d23d0b632" alt="Turnos" style="height:100%;object-fit:cover" />
+        </div>
+      </div>
+      <!-- Feature 4 -->
+      <div class="feature-card fade-in">
+        <div class="feature-text">
+          <p class="feature-label">FORMULARIOS OPERATIVOS</p>
+          <p class="feature-title">Registra actividades, inspecciones y novedades</p>
+          <p class="feature-desc">Crea formularios digitales para reportes, controles e incidencias, asegurando información estructurada y confiable.</p>
+          <a class="feature-link" href="#">Conocer más</a>
+        </div>
+        <div class="feature-image" style="height:369px">
+          <img src="https://www.figma.com/api/mcp/asset/36aa527e-0361-4238-af2a-9889ef707a85" alt="Formularios" style="height:100%;object-fit:cover;object-position:top" />
+        </div>
+      </div>
+      <!-- Feature 5 -->
+      <div class="feature-card fade-in">
+        <div class="feature-text">
+          <p class="feature-label">SUPERVISIÓN EN TIEMPO REAL</p>
+          <p class="feature-title">Supervisa equipos operativos desde un panel centralizado</p>
+          <p class="feature-desc">Visualiza ubicación, estado y actividad del personal para tomar decisiones rápidas y efectivas.</p>
+          <a class="feature-link" href="#">Conocer más</a>
+        </div>
+        <div class="feature-image" style="height:369px">
+          <img src="https://www.figma.com/api/mcp/asset/88ccde53-5fb4-4b6a-9956-59861eadd43c" alt="Supervisión" style="height:100%;object-fit:cover;object-position:top" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Por qué GUARNIC -->
+  <section class="why-section">
+    <div class="section-header fade-in" style="max-width:1080px;width:100%;text-align:center">
+      <h2 class="section-title" style="color:var(--title)">Eso no es todo</h2>
+      <p class="section-subtitle" style="color:var(--text)">¿Por qué usar GUARNIC?</p>
+    </div>
+    <div class="why-grid" style="max-width:1080px;width:100%">
+      <div class="why-col">
+        <div class="card fade-in">
+          <img src="https://www.figma.com/api/mcp/asset/74e61121-acbf-4a01-8a8e-7689764c04b9" alt="" style="width:32px;height:32px" />
+          <div><p class="card-title">Cronogramas automatizados</p><p class="card-desc" style="margin-top:8px">Planificación de jornadas y actividades con alertas configurables.</p></div>
+        </div>
+        <div class="card fade-in fade-in-delay-1">
+          <img src="https://www.figma.com/api/mcp/asset/0e3952c0-3031-45ce-a76a-2fab5f5667e1" alt="" style="width:32px;height:32px" />
+          <div><p class="card-title">Marcadores</p><p class="card-desc" style="margin-top:8px">Validación de presencia mediante GPS, códigos QR o dispositivos NFC.</p></div>
+        </div>
+        <div class="card fade-in fade-in-delay-2">
+          <img src="https://www.figma.com/api/mcp/asset/b446f2a3-a697-4eed-889b-fcfcb36599c2" alt="" style="width:32px;height:32px" />
+          <div><p class="card-title">Documentación operativa</p><p class="card-desc" style="margin-top:8px">Centralización de reportes, formularios y archivos críticos en un solo lugar.</p></div>
+        </div>
+      </div>
+      <div class="why-col">
+        <div class="card fade-in">
+          <img src="https://www.figma.com/api/mcp/asset/7c5758cc-3a79-428a-a3f0-451d9dfee138" alt="" style="width:32px;height:32px" />
+          <div><p class="card-title">Historial de posiciones</p><p class="card-desc" style="margin-top:8px">Registro completo de ubicaciones y desplazamientos de usuarios.</p></div>
+        </div>
+        <div class="card fade-in fade-in-delay-1">
+          <img src="https://www.figma.com/api/mcp/asset/2d4a4adb-308d-42cb-bbc6-14ab841ffc15" alt="" style="width:32px;height:32px" />
+          <div><p class="card-title">Métricas en multidashboards</p><p class="card-desc" style="margin-top:8px">Indicadores de asistencia y cumplimiento consolidados en paneles.</p></div>
+        </div>
+        <div class="card fade-in fade-in-delay-2">
+          <img src="https://www.figma.com/api/mcp/asset/984611b5-671b-4127-b763-3e58140bce8c" alt="" style="width:32px;height:32px" />
+          <div><p class="card-title">Control de asistencia</p><p class="card-desc" style="margin-top:8px">Gestiona ingresos y salidas de manera estandarizada.</p></div>
+        </div>
+      </div>
+      <div class="why-col">
+        <div class="card fade-in">
+          <div class="card-icon"><img src="https://www.figma.com/api/mcp/asset/80c0a8c4-2358-47de-8e78-cbd99410bc82" alt="" /></div>
+          <div><p class="card-title">Botón de pánico</p><p class="card-desc" style="margin-top:8px">Alerta inmediata de emergencias con notificación en tiempo real.</p></div>
+        </div>
+        <div class="card fade-in fade-in-delay-1">
+          <img src="https://www.figma.com/api/mcp/asset/b92de262-7ab2-4080-9670-0aed55e6f6f4" alt="" style="width:32px;height:32px" />
+          <div><p class="card-title">Órdenes de trabajo</p><p class="card-desc" style="margin-top:8px">Asignación estructurada de tareas mediante plantillas reutilizables.</p></div>
+        </div>
+        <div class="card fade-in fade-in-delay-2">
+          <img src="https://www.figma.com/api/mcp/asset/34f17830-2973-4ded-b154-ae043ba61d5d" alt="" style="width:32px;height:32px" />
+          <div><p class="card-title">Línea de tiempo operativa</p><p class="card-desc" style="margin-top:8px">Visualización cronológica de eventos, rondas y registros clave.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Industrias -->
+  <section class="industries-section">
+    <div style="max-width:1080px;width:100%;text-align:center" class="fade-in">
+      <h2 class="industry-title">Soluciones para distintas industrias</h2>
+      <p class="industry-subtitle">Un sistema flexible que responde a los desafíos particulares de cada industria.</p>
+    </div>
+    <div class="industry-grid" style="max-width:1080px;width:100%">
+      <div class="industry-card fade-in">
+        <img class="industry-img" src="https://www.figma.com/api/mcp/asset/b1b7debf-9114-4c56-b712-16c542c62885" alt="Seguridad" />
+        <div class="industry-content">
+          <p class="industry-name">Seguridad</p>
+          <p class="industry-desc">Supervisa operaciones de seguridad en tiempo real, controla rondas, accesos y cumplimiento de turnos, y gestiona incidentes con información confiable y trazable.</p>
+          <a class="industry-link" href="#">Ver más</a>
+        </div>
+      </div>
+      <div class="industry-card fade-in fade-in-delay-1">
+        <img class="industry-img" src="https://www.figma.com/api/mcp/asset/a2fcc3b6-e36b-4144-9194-25b846787bfc" alt="Servicios de Aseo" />
+        <div class="industry-content">
+          <p class="industry-name">Servicios de Aseo</p>
+          <p class="industry-desc">Gestiona equipos operativos, planifica tareas y supervisa la ejecución de servicios con control de actividades, reportes en terreno y seguimiento continuo.</p>
+          <a class="industry-link" href="#">Ver más</a>
+        </div>
+      </div>
+      <div class="industry-card fade-in fade-in-delay-2">
+        <img class="industry-img" src="https://www.figma.com/api/mcp/asset/84c5ea5e-3e55-4eef-91b6-71931fdbc714" alt="Facilities" style="object-position:center" />
+        <div class="industry-content">
+          <p class="industry-name">Facilities / Operaciones</p>
+          <p class="industry-desc">Centraliza la gestión de tareas, rutas y personal en instalaciones con visibilidad en tiempo real y trazabilidad completa.</p>
+          <a class="industry-link" href="#">Ver más</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Clientes -->
+  <section class="clients-section fade-in">
+    <div>
+      <h2 class="clients-title">Confían en nosotros</h2>
+      <p class="clients-subtitle">Empresas líderes de distintos sectores respaldan nuestra tecnología para optimizar su operación.</p>
+    </div>
+    <div class="logos-row">
+      <div class="logo-placeholder">LOGOIPSUM</div>
+      <div class="logo-placeholder">LOGOIPSUM</div>
+      <div class="logo-placeholder">LOGOIPSUM</div>
+      <div class="logo-placeholder">LOGOIPSUM</div>
+      <div class="logo-placeholder">LOGOIPSUM</div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section">
+    <div class="faq-inner">
+      <div class="faq-left fade-in">
+        <h2 class="faq-title">Preguntas Frecuentes</h2>
+        <p class="faq-intro">Vamos a ayudarte con algunas de tus preguntas más frecuentes.<br><br>¿No pudiste encontrar tu respuesta?<br><a href="#">Háblanos</a></p>
+      </div>
+      <div class="faq-list fade-in fade-in-delay-1">
+        <div class="faq-item">
+          <div class="faq-q open" onclick="toggleFaq(this)">
+            <img src="https://www.figma.com/api/mcp/asset/67e378ea-55f8-4df9-9024-bd2fa82a80b9" alt="-" />
+            <span>¿Cumple GUARNIC con los requisitos de la Dirección del Trabajo en Chile?</span>
+          </div>
+          <p class="faq-answer open">Sí, Guarnic está validado por la Dirección del Trabajo de Chile y cumple con toda la normativa vigente, generando reportes oficiales para empleadores, trabajadores y fiscalizadores.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <img src="https://www.figma.com/api/mcp/asset/f294bbd9-209c-4055-aec7-7b6667747297" alt="+" />
+            <span>¿Qué tipos de jornadas laborales se pueden configurar en Guarnic?</span>
+          </div>
+          <p class="faq-answer">Se pueden configurar jornadas ordinarias, parciales, exceptuadas y de turno, adaptándose a las necesidades operativas de cada empresa.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <img src="https://www.figma.com/api/mcp/asset/f294bbd9-209c-4055-aec7-7b6667747297" alt="+" />
+            <span>¿Qué reportes normativos genera el sistema?</span>
+          </div>
+          <p class="faq-answer">El sistema genera libros de asistencia, informes de cumplimiento de jornada, reportes de horas extra y documentación requerida por la Dirección del Trabajo.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <img src="https://www.figma.com/api/mcp/asset/f294bbd9-209c-4055-aec7-7b6667747297" alt="+" />
+            <span>¿Qué diferencia a Guarnic de otros sistemas de asistencia?</span>
+          </div>
+          <p class="faq-answer">Guarnic combina el control de asistencia con gestión de rutas, formularios operativos, supervisión en tiempo real y botón de pánico, todo en una sola plataforma validada por la DT Chile.</p>
+        </div>
+        <a class="faq-more" href="#">Ver más</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Form -->
+  <section class="demo-section">
+    <div class="demo-card fade-in">
+      <div class="demo-info">
+        <p class="demo-title">Solicita una demo personalizada</p>
+        <p class="demo-desc">Completa tus datos y te contactaremos para mostrarte cómo GUARNIC se adapta a tu organización</p>
+      </div>
+      <form class="demo-form" onsubmit="return false">
+        <div class="form-field">
+          <div class="form-label"><span class="req">*</span><span class="lbl">Nombre y apellido</span></div>
+          <input class="form-input" type="text" placeholder="Ingresa tu nombre y apellido" />
+        </div>
+        <div class="form-field">
+          <div class="form-label"><span class="req">*</span><span class="lbl">E-mail</span></div>
+          <input class="form-input" type="email" placeholder="ingresa tu e-mail" />
+        </div>
+        <div class="form-field">
+          <div class="form-label"><span class="req">*</span><span class="lbl">Teléfono</span></div>
+          <input class="form-input" type="tel" placeholder="Ingresa tu número de teléfono" />
+        </div>
+        <button class="form-submit" type="submit">Enviar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-brand-info">
+            <p class="footer-brand-name">GUARNIC</p>
+            <p class="footer-brand-desc">Gestión inteligente de equipos en campo y operaciones críticas.</p>
+          </div>
+          <div class="footer-socials">
+            <img src="https://www.figma.com/api/mcp/asset/6bfa8cc3-7bd3-4e74-9600-e59264797191" alt="Social" />
+            <img src="https://www.figma.com/api/mcp/asset/67dcfc66-438b-4403-931a-6f06ca24716f" alt="Social" />
+            <img src="https://www.figma.com/api/mcp/asset/5dc2694f-99b0-4573-a8cd-81d25d9bee95" alt="Social" />
+          </div>
+        </div>
+        <div class="footer-nav">
+          <div class="footer-col">
+            <p class="footer-col-title">Producto</p>
+            <a href="#">Funcionalidades principales</a>
+            <a href="#">Funcionalidades avanzadas</a>
+            <a href="#">Industrias</a>
+          </div>
+          <div class="footer-col">
+            <p class="footer-col-title">Recursos</p>
+            <a href="#">Preguntas frecuentes</a>
+            <a href="#">Casos de uso</a>
+            <a href="#">Guías y documentación</a>
+          </div>
+          <div class="footer-col">
+            <p class="footer-col-title">Soporte</p>
+            <a href="#">Contacto</a>
+            <a href="#">Solicitar demo</a>
+            <a href="#">Legal / Privacidad</a>
+          </div>
+        </div>
+      </div>
+      <p class="footer-copy">© 2025 GUARNIC. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // FAQ accordion
+    function toggleFaq(el) {
+      const answer = el.nextElementSibling;
+      const isOpen = el.classList.contains('open');
+      // close all
+      document.querySelectorAll('.faq-q').forEach(q => q.classList.remove('open'));
+      document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+      if (!isOpen) {
+        el.classList.add('open');
+        answer.classList.add('open');
+      }
+    }
+
+    // Mobile menu toggle (placeholder)
+    function toggleMenu() {
+      alert('Menú de navegación - aquí iría el menú desplegable mobile');
+    }
+  </script>
+</body>
+</html>
